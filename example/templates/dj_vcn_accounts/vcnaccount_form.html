@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+{% block path %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'dj-vcn-accounts:list' %}">VCN accounts list</a></li>
+      {% if 'create' in request.path %}
+        <li class="breadcrumb-item active" aria-current="page">Creation</a></li>
+      {% elif 'update' in request.path %}
+        <li class="breadcrumb-item" aria-current="page"><a href="{% url 'dj-vcn-accounts:detail' vcnaccount.id %}">{{ vcnaccount }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Update</a></li>
+      {% endif %}
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_title %}
+  {% if 'create' in request.path %}
+    VCN account creation
+  {% elif 'update' in request.path %}
+    Update VCN account '{{ vcnaccount }}'
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_form form layout="horizontal" %}
+    {% bootstrap_button "Save" button_type="submit" button_class="btn-primary btn-sm" %}
+  </form>
+{% endblock %}

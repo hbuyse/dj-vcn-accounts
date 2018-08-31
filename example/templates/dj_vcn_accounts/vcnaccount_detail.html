@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+{% load icons %}
+
+
+{% block path %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'dj-vcn-accounts:list' %}">VCN accounts list</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ vcnaccount }}</a></li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_title_buttons %}
+  <div class="btn-group float-right" role="group">
+    <a href="{% url 'dj-vcn-accounts:update' vcnaccount.id %}" class="btn btn-primary btn-sm">Update</a>
+    <a href="{% url 'dj-vcn-accounts:delete' vcnaccount.id %}" class="btn btn-danger btn-sm">Delete</a>
+  </div>
+{% endblock %}
+  
+{% block page_title %}
+  {{ vcnaccount }} <small class="text-muted">{{ vcnaccount.username }}</small>
+{% endblock %}
+
+
+{% block content %}
+  {% if vcnaccount.staff_title %}
+    <div class="alert alert-success{% if dismissive_alert %} alert-dismissible fade show{% endif %}" role="alert">
+      <h4 class="alert-heading">{{ vcnaccount.staff_title }}</h4>
+      This person is part of the VCN staff.
+      Contact: <a href="mailto:{{ vcnaccount.staff_email }}" class="alert-link">this link</a>.
+
+      {% if dismissive_alert %}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {% endif %}
+    </div>
+  {% endif %}
+
+
+  {% if vcnaccount.teams_set.count >= 0 %}
+    <h2>Trainer</h2>
+  {% endif %}
+
+  {% if vcnaccount.email or vcnaccount.phone %}
+    <h2>Contact</h2>
+
+    <div class="row">
+      {% if vcnaccount.phone %}
+        <div class="col">
+          <ul class="list-group">
+            <li class="list-group-item">
+              <a href="tel:+33{{ vcnaccount.phone|slice:"1:" }}" class="btn-sm btn-primary float-right">Contacter</a>
+              {% icon 'phone' %} {{ vcnaccount.phone }}
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+
+      {% if vcnaccount.phone %}
+        <div class="col">
+          <ul class="list-group">
+            <li class="list-group-item">
+              <a href="mailto:{{ vcnaccount.email }}" class="btn-sm btn-primary float-right">Contacter</a>
+              {% icon 'envelope' %} {{ vcnaccount.email }}
+            </li>
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

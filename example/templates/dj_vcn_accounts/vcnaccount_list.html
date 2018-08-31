@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+
+{% block path %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item active">VCN accounts list</li>
+    </ol>
+  </nav>
+{% endblock %}
+  
+{% block page_title %}
+  VCN accounts list
+{% endblock %}
+
+
+{% block content %}
+  {% for vcnaccount in vcnaccount_list %}
+    {% if forloop.first %}
+      <div class="card-columns">
+    {% endif %}
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ vcnaccount }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{ vcnaccount.username }}</h6>
+        <p class="card-text">TODO.</p>
+        <a href="{% url 'dj-vcn-accounts:detail' vcnaccount.id %}" class="card-link">Details</a>
+      </div>
+    </div>
+
+
+    {% if forloop.last %}
+      </div>
+    {% endif %}
+  {% empty %}
+    <p>No VCN accounts...</p>
+    <p>You can create one <a href="{% url 'dj-vcn-accounts:create' %}">here</a></p>
+  {% endfor %}
+
+  {% if is_paginated %}
+    <nav aria-label="dj-vcn-accounts-pagination">
+      <ul class="pagination justify-content-center mt-2">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% endif %}
+
+        {% for i in paginator.page_range %}
+          {% if page_obj.number == i %}
+            <li class="page-item active">
+              <span class="page-link">
+                {{ i }}
+                <span class="sr-only">(current)</span>
+              </span>
+            </li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#" tabindex="-1">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+{% endblock %}

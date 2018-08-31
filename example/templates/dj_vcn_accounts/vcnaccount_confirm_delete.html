@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load bootstrap4 %}
+
+{% block path %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'dj-vcn-accounts:list' %}">VCN accounts list</a></li>
+      <li class="breadcrumb-item" aria-current="page">{{ vcnaccount }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Deletion</a></li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_title %}
+  {{ vcnaccount }}'s account deletion
+{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  <p>Do you really want to delete your account?</p>
+  {% bootstrap_button "Confirmer" button_type="submit" button_class="btn-primary" %}
+</form>
+{% endblock %}

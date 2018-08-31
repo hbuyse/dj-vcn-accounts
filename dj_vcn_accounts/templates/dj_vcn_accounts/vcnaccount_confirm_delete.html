@@ -1,0 +1,7 @@
+<h1 class="float-left">{{ vcnaccount }}</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <p>Do you really want to delete your account and everything linked to it?</p>
+    <button class="btn btn-primary btn-sm" type="submit">Confirm</button>
+</form>
