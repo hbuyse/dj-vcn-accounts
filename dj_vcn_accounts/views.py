@@ -44,6 +44,8 @@ class VcnAccountDetailView(DetailView):
     """View that returns the detail of VCN account."""
 
     model = VcnAccount
+    # use username instead of pk
+    slug_field = "username"
 
     def get_context_data(self, **kwargs):
         """."""
@@ -61,12 +63,24 @@ class VcnAccountCreateView(CreateView):
     def get(self, request, *args, **kwargs):
         """."""
         if request.user.is_authenticated:
-            return redirect(reverse("dj-vcn-accounts:update", kwargs={'pk': request.user.id}))
+            return redirect(reverse("dj-vcn-accounts:update", kwargs={'slug': request.user.username}))
+
         return super().get(request, args, kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """Override POST method.
+
+        User authenticated and tried to update the informations about an other user -> 403
+        User is not authenticated -> 403
+        """
+        if request.user.is_authenticated:
+            raise PermissionDenied
+
+        return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
         """Get the URL after the success."""
-        return reverse('dj-vcn-accounts:detail', kwargs={'pk': self.object.id})
+        return reverse('dj-vcn-accounts:detail', kwargs={'slug': self.object.username})
 
 
 class VcnAccountUpdateView(UpdateView):
@@ -74,6 +88,8 @@ class VcnAccountUpdateView(UpdateView):
 
     model = VcnAccount
     fields = ['first_name', 'last_name', 'email', 'phone']
+    # use username instead of pk
+    slug_field = "username"
 
     def get(self, request, *args, **kwargs):
         """Override GET method.
@@ -83,9 +99,17 @@ class VcnAccountUpdateView(UpdateView):
         """
         self.object = self.get_object()
 
-        if not request.user.is_authenticated:
+        # If user is part of staff or superuser
+        if request.user.is_staff or request.user.is_superuser:
+            logger.info("Staff user {} tries to access the update account {}.".format(request.user.username, self.object.username))
+            pass
+        # Anonymous user can not update account
+        elif not request.user.is_authenticated:
+            logger.error("Anonymous user tried to access the update account {}.".format(self.object.username))
             raise PermissionDenied
+        # Authenticated user can not update an other user account
         elif request.user.id != self.object.id:
+            logger.error("User {} tried to access the update account {}.".format(request.user.username, self.object.username))
             raise PermissionDenied
 
         return super().get(request, *args, **kwargs)
@@ -107,13 +131,15 @@ class VcnAccountUpdateView(UpdateView):
 
     def get_success_url(self):
         """Get the URL after the success."""
-        return reverse('dj-vcn-accounts:detail', kwargs={'pk': self.object.id})
+        return reverse('dj-vcn-accounts:detail', kwargs={'slug': self.object.username})
 
 
 class VcnAccountDeleteView(DeleteView):
     """View that deletes a VCN account."""
 
     model = VcnAccount
+    # use username instead of pk
+    slug_field = "username"
 
     def get_success_url(self):
         """Get the URL after the success."""

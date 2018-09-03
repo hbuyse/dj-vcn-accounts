@@ -6,17 +6,25 @@
 {% block path %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{% url 'dj-vcn-accounts:list' %}">VCN accounts list</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{ vcnaccount }}</a></li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'dj-vcn-accounts:list' %}">
+          VCN accounts list
+        </a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ vcnaccount }}
+      </li>
     </ol>
   </nav>
 {% endblock %}
 
 {% block page_title_buttons %}
-  <div class="btn-group float-right" role="group">
-    <a href="{% url 'dj-vcn-accounts:update' vcnaccount.id %}" class="btn btn-primary btn-sm">Update</a>
-    <a href="{% url 'dj-vcn-accounts:delete' vcnaccount.id %}" class="btn btn-danger btn-sm">Delete</a>
-  </div>
+  {% if request.user.is_superuser or request.user == vcnaccount%}
+    <div class="btn-group float-right" role="group">
+      <a href="{% url 'dj-vcn-accounts:update' vcnaccount.username %}" class="btn btn-primary btn-sm">Update</a>
+      <a href="{% url 'dj-vcn-accounts:delete' vcnaccount.username %}" class="btn btn-danger btn-sm">Delete</a>
+    </div>
+  {% endif %}
 {% endblock %}
   
 {% block page_title %}

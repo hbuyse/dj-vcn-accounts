@@ -24,7 +24,7 @@ urlpatterns = [
     path('', views.VcnAccountListView.as_view(), name='list'),
     path('staff', views.VcnAccountListView.as_view(staff=True), name='staff'),
     path('create', views.VcnAccountCreateView.as_view(), name='create'),
-    path('<int:pk>', views.VcnAccountDetailView.as_view(), name='detail'),
-    path('<int:pk>/update', views.VcnAccountUpdateView.as_view(), name='update'),
-    path('<int:pk>/delete', views.VcnAccountDeleteView.as_view(), name='delete'),
+    path('<str:slug>', views.VcnAccountDetailView.as_view(), name='detail'),
+    path('<str:slug>/update', views.VcnAccountUpdateView.as_view(), name='update'),
+    path('<str:slug>/delete', views.VcnAccountDeleteView.as_view(), name='delete'),
 ]

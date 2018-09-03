@@ -27,15 +27,15 @@ class TestUrlsVcnAccount(TestCase):
 
     def test_vcn_account_detail_url(self):
         """Test the URL that gives the details of a vcn-account."""
-        url = reverse('dj-vcn-accounts:detail', kwargs={'pk': 1})
-        self.assertEqual(url, '/1')
+        url = reverse('dj-vcn-accounts:detail', kwargs={'slug': 'toto'})
+        self.assertEqual(url, '/toto')
 
     def test_vcn_account_update_url(self):
         """Test the URL of the listing of vcn-accounts."""
-        url = reverse('dj-vcn-accounts:update', kwargs={'pk': 1})
-        self.assertEqual(url, "/1/update")
+        url = reverse('dj-vcn-accounts:update', kwargs={'slug': 'toto'})
+        self.assertEqual(url, "/toto/update")
 
     def test_vcn_account_delete_url(self):
         """Test the URL of the listing of vcn-accounts."""
-        url = reverse('dj-vcn-accounts:delete', kwargs={'pk': 1})
-        self.assertEqual(url, "/1/delete")
+        url = reverse('dj-vcn-accounts:delete', kwargs={'slug': 'toto'})
+        self.assertEqual(url, "/toto/delete")

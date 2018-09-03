@@ -23,10 +23,28 @@
 
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">{{ vcnaccount }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ vcnaccount.username }}</h6>
-        <p class="card-text">TODO.</p>
-        <a href="{% url 'dj-vcn-accounts:detail' vcnaccount.id %}" class="card-link">Details</a>
+        <h5 class="card-title">
+          {{ vcnaccount }}
+          {% if vcnaccount.is_staff %}
+            <span class="badge badge-pill badge-success">Staff</span>
+          {% endif %}
+          {% if vcnaccount.is_superuser %}
+            <span class="badge badge-pill badge-warning">Webmaster</span>
+          {% endif %}
+        </h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          {{ vcnaccount.username }}
+        </h6>
+        {% comment %}
+        {% if vcnaccount.is_staff %}
+          <p class="card-text">
+            TODO.
+          </p>
+        {% endif %}
+        {% endcomment %}
+        <a href="{% url 'dj-vcn-accounts:detail' vcnaccount.username %}" class="card-link">
+          Details
+        </a>
       </div>
     </div>
 

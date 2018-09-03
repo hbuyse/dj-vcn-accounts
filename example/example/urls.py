@@ -21,8 +21,8 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
-    path('', include('dj_vcn_accounts.urls', namespace='dj_vcn_accounts')),
-    path('admin/', admin.site.urls),
     path('login', auth_views.login, name='login'),
     path('logout', auth_views.logout, {'next_page': '/'}, name='logout'),
+    path('admin/', admin.site.urls),
+    path('', include('dj_vcn_accounts.urls', namespace='dj_vcn_accounts')),
 ]
