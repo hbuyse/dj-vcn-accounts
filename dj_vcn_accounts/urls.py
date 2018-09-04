@@ -23,8 +23,13 @@ app_name = 'dj-vcn-accounts'
 urlpatterns = [
     path('', views.VcnAccountListView.as_view(), name='list'),
     path('staff', views.VcnAccountListView.as_view(staff=True), name='staff'),
+    path('webmaster', views.VcnAccountListView.as_view(webmaster=True), name='webmaster'),
     path('create', views.VcnAccountCreateView.as_view(), name='create'),
     path('<str:slug>', views.VcnAccountDetailView.as_view(), name='detail'),
+    path('activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+         views.activate,
+         name='activate'
+         ),
     path('<str:slug>/update', views.VcnAccountUpdateView.as_view(), name='update'),
     path('<str:slug>/delete', views.VcnAccountDeleteView.as_view(), name='delete'),
 ]

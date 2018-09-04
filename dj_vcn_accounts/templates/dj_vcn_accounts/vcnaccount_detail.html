@@ -1,6 +1,6 @@
 <h1>{{ vcnaccount }}</h1>
 
-<p>Username: {{ vcnaccount.username }}</p>
+<p>Username: {{ vcnaccount.get_username }}</p>
 <p>First name: {{ vcnaccount.first_name }}</p>
 <p>Last name: {{ vcnaccount.last_name }}</p>
 {% if vcnaccount.staff_title %}

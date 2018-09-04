@@ -26,22 +26,20 @@
         <h5 class="card-title">
           {{ vcnaccount }}
           {% if vcnaccount.is_staff %}
-            <span class="badge badge-pill badge-success">Staff</span>
+            <a href="{% url 'dj_vcn_accounts:staff' %}" class="badge badge-pill badge-success">Staff</a>
           {% endif %}
           {% if vcnaccount.is_superuser %}
-            <span class="badge badge-pill badge-warning">Webmaster</span>
+            <a href="{% url 'dj_vcn_accounts:webmaster' %}"  class="badge badge-pill badge-warning">Webmaster</a>
           {% endif %}
         </h5>
         <h6 class="card-subtitle mb-2 text-muted">
           {{ vcnaccount.username }}
         </h6>
-        {% comment %}
         {% if vcnaccount.is_staff %}
           <p class="card-text">
-            TODO.
+            {{ vcnaccount.staff_title }}
           </p>
         {% endif %}
-        {% endcomment %}
         <a href="{% url 'dj-vcn-accounts:detail' vcnaccount.username %}" class="card-link">
           Details
         </a>

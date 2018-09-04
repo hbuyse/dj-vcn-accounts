@@ -33,6 +33,20 @@
 
 
 {% block content %}
+  {% if vcnaccount.is_superuser %}
+    <div class="alert alert-warning{% if dismissive_alert %} alert-dismissible fade show{% endif %}" role="alert">
+      <h4 class="alert-heading">Webmaster</h4>
+      This person is a webmaster.
+      Contact: <a href="mailto:{{ vcnaccount.staff_email }}" class="alert-link">this link</a>.
+
+      {% if dismissive_alert %}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {% endif %}
+    </div>
+  {% endif %}
+
   {% if vcnaccount.staff_title %}
     <div class="alert alert-success{% if dismissive_alert %} alert-dismissible fade show{% endif %}" role="alert">
       <h4 class="alert-heading">{{ vcnaccount.staff_title }}</h4>
@@ -67,7 +81,7 @@
         </div>
       {% endif %}
 
-      {% if vcnaccount.phone %}
+      {% if vcnaccount.email %}
         <div class="col">
           <ul class="list-group">
             <li class="list-group-item">
