@@ -5,11 +5,20 @@
 import logging
 
 from django.contrib import messages
+from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
+from django.core.mail import EmailMessage
+from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.template.loader import render_to_string
 from django.urls import reverse
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.generic import (
+    View,
     CreateView,
     DeleteView,
     UpdateView,
@@ -23,16 +32,11 @@ from .forms import (
 from .models import (
     VcnAccount,
 )
+from .tokens import (
+    account_activation_token
+)
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse
-from django.contrib.auth import login
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.template.loader import render_to_string
-from .tokens import account_activation_token
-from django.contrib.auth.models import User
-from django.core.mail import EmailMessage
+
 
 
 logger = logging.getLogger('django.contrib.gis')
@@ -182,46 +186,30 @@ class VcnAccountUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         """Get the URL after the success."""
+        messages.success(self.request, "You successfully updated your account.")
         return reverse('dj-vcn-accounts:detail', kwargs={'slug': self.object.username})
 
 
-def activate(request, uidb64, token):
-    """."""
-    try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        login(request, user)
-        # return redirect('home')
-        return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
-    else:
-        return HttpResponse('Activation link is invalid!')
-
-
 class VcnAccountActivationView(View):
-    """..."""
+    """View handled when the user activates its account."""
     template_name = 'dj_vcn_accounts/vcnaccount_activated.html'
 
     def get(self, request, *args, **kwargs):
         """..."""
         try:
-            uid = force_text(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user_id = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=user_id)
+        except(TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
             user = None
+
         if user is not None and account_activation_token.check_token(user, token):
             user.is_active = True
             user.save()
-            login(request, user)
-            # return redirect('home')
-            return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
+            messages.success(self.request, 'Thank you for your email confirmation. Now you can login your account.')
+            return redirect(reverse("dj_vcn_accounts:list"))
         else:
-            messages.error(request, "Activation link is invalid!")
-            return HttpResponse('Activation link is invalid!')
+            messages.error(self.request, "Activation link is invalid!")
+            raise Http404
 
 
 class VcnAccountDeleteView(LoginRequiredMixin, DeleteView):
@@ -282,4 +270,5 @@ class VcnAccountDeleteView(LoginRequiredMixin, DeleteView):
 
     def get_success_url(self):
         """Get the URL after the success."""
+        messages.success(self.request, "You successfully deactivated your account.")
         return reverse('dj-vcn-accounts:list')
