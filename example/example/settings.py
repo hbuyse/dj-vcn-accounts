@@ -227,3 +227,11 @@ AUTH_USER_MODEL = 'dj_vcn_accounts.VcnAccount'
 LOGIN_URL = "/login"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+
+DEFAULT_FROM_EMAIL = 'testing@example.com'
+EMAIL_HOST = 'localhost'
+EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = ''
+EMAIL_PORT = 1025
+EMAIL_USE_TLS = False

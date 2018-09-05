@@ -37,13 +37,13 @@ urlpatterns = [
          view=views.VcnAccountCreateView.as_view(),
          name='create'
          ),
+    path('activate/<slug:uidb64>/<slug:token>',
+         view=views.VcnAccountActivationView.as_view(),
+         name='activate'
+         ),
     path('<str:slug>',
          view=views.VcnAccountDetailView.as_view(),
          name='detail'
-         ),
-    path('activate/<uuid:uidb64>/<slug:token>',
-         view=views.VcnAccountActivationView.as_view(),
-         name='activate'
          ),
     path('<str:slug>/update',
          view=views.VcnAccountUpdateView.as_view(),

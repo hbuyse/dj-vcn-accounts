@@ -58,6 +58,9 @@
           {% if vcnaccount.is_superuser %}
             <a href="{% url 'dj_vcn_accounts:webmaster' %}"  class="badge badge-pill badge-warning">Webmaster</a>
           {% endif %}
+          {% if not vcnaccount.is_active %}
+            <span class="badge badge-pill badge-danger">Inactive</a>
+          {% endif %}
         </h5>
         <h6 class="card-subtitle mb-2 text-muted">
           {{ vcnaccount.username }}
