@@ -5,13 +5,40 @@
 {% block path %}
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item active">VCN accounts list</li>
+
+      {% if 'staff' in request.path or 'webmaster' in request.path %}
+        <li class="breadcrumb-item">
+          <a href="{% url 'dj-vcn-accounts:list' %}">
+            VCN accounts list
+          </a>
+        </li>
+        {% if 'staff' in request.path %}
+          <li class="breadcrumb-item active">
+            Staff
+          </li>
+        {% elif 'webmaster' in request.path %}
+          <li class="breadcrumb-item active">
+            Webmaster
+          </li>
+        {% endif %}
+      {% else %}
+        <li class="breadcrumb-item active">
+          VCN accounts list
+        </li>
+      {% endif %}
+      </li>
     </ol>
   </nav>
 {% endblock %}
   
 {% block page_title %}
-  VCN accounts list
+  VCN
+  {% if 'staff' in request.path %}
+    staff
+  {% elif 'webmaster' in request.path %}
+    webmaster
+  {% endif %}
+  accounts list
 {% endblock %}
 
 
