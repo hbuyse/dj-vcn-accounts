@@ -189,7 +189,10 @@ class VcnAccountUpdateView(LoginRequiredMixin, UpdateView):
 
 
 class VcnAccountActivationView(View):
-    """View handled when the user activates its account."""
+    """View handled when the user activates its account.
+
+    See https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef for documentation
+    """
     template_name = 'dj_vcn_accounts/vcnaccount_activated.html'
 
     def get(self, request, *args, **kwargs):
