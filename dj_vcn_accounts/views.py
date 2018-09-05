@@ -5,13 +5,12 @@
 import logging
 
 from django.contrib import messages
-from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
-from django.http import HttpResponse
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -116,10 +115,12 @@ class VcnAccountCreateView(CreateView):
         to_email = form.cleaned_data.get('email')
         email = EmailMessage(mail_subject, message, to=[to_email])
         email.send()
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         """Get the URL after the success."""
+        messages.success("Your account has successfully been created."
+                         "Go to your email account to finish the activation.")
         return reverse('dj-vcn-accounts:detail', kwargs={'slug': self.object.username})
 
 
@@ -188,31 +189,6 @@ class VcnAccountUpdateView(LoginRequiredMixin, UpdateView):
         return reverse('dj-vcn-accounts:detail', kwargs={'slug': self.object.username})
 
 
-class VcnAccountActivationView(View):
-    """View handled when the user activates its account.
-
-    See https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef for documentation
-    """
-    template_name = 'dj_vcn_accounts/vcnaccount_activated.html'
-
-    def get(self, request, *args, **kwargs):
-        """..."""
-        try:
-            user_id = force_text(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=user_id)
-        except(TypeError, ValueError, OverflowError, get_user_model().DoesNotExist):
-            user = None
-
-        if user is not None and account_activation_token.check_token(user, token):
-            user.is_active = True
-            user.save()
-            messages.success(self.request, 'Thank you for your email confirmation. Now you can login your account.')
-            return redirect(reverse("dj_vcn_accounts:list"))
-        else:
-            messages.error(self.request, "Activation link is invalid!")
-            raise Http404
-
-
 class VcnAccountDeleteView(LoginRequiredMixin, DeleteView):
     """View that deletes a VCN account."""
 
@@ -245,8 +221,8 @@ class VcnAccountDeleteView(LoginRequiredMixin, DeleteView):
 
         return super().get(request, *args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        """Override POST method.
+    def delete(self, request, *args, **kwargs):
+        """Override DELETE method (in DeleteView, post function calls delete function).
 
         User authenticated and tried to update the informations about an other user -> 403
         User is not authenticated -> 403
@@ -255,21 +231,48 @@ class VcnAccountDeleteView(LoginRequiredMixin, DeleteView):
 
         # If user is part of staff or superuser
         if request.user.is_staff or request.user.is_superuser:
-            logger.info("Staff user {} accessed (POST) to the DeleteView of {}'s account.".format(
+            logger.info("Staff user {} accessed (DELETE) to the DeleteView of {}'s account.".format(
                 request.user.username, self.object.username))
             logger.info(kwargs)
             pass
         elif not request.user.is_authenticated:
-            logger.error("Anonymous user tried to POST to the DeleteView of {}'s account.".format(self.object.username))
+            logger.error("Anonymous user tried to delete {}'s account.".format(self.object.username))
             raise PermissionDenied
         elif request.user.id != self.object.id:
-            logger.error("User {} tried to POST to the DeleteView of {}'s account.".format(
+            logger.error("User {} tried to delete {}'s account.".format(
                 request.user.username, self.object.username))
             raise PermissionDenied
 
-        return super().post(request, *args, **kwargs)
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         """Get the URL after the success."""
         messages.success(self.request, "You successfully deactivated your account.")
         return reverse('dj-vcn-accounts:list')
+
+
+class VcnAccountActivationView(View):
+    """View handled when the user activates its account.
+
+    See https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef for documentation
+    """
+
+    template_name = 'dj_vcn_accounts/vcnaccount_activated.html'
+
+    def get(self, request, *args, **kwargs):
+        """..."""
+        try:
+            user_id = force_text(urlsafe_base64_decode(kwargs['uidb64']))
+            user = User.objects.get(pk=user_id)
+        except(TypeError, ValueError, OverflowError, VcnAccount.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, kwargs['token']):
+            user.is_active = True
+            user.save()
+        else:
+            messages.error(self.request, "Activation link is invalid!")
+            raise Http404
+
+        messages.success(self.request, 'Thank you for your email confirmation. Now you can login your account.')
+        return redirect(reverse("dj_vcn_accounts:list"))
