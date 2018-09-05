@@ -37,9 +37,7 @@ from .tokens import (
 )
 
 
-
-
-logger = logging.getLogger('django.contrib.gis')
+logger = logging.getLogger(__name__)
 
 
 class VcnAccountListView(ListView):

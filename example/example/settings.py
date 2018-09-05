@@ -18,12 +18,11 @@ LOGGING = {
     'formatters': {
         'console': {
             # exact format is not important, this is the minimum information
-            'format': '%(asctime)s - %(name)-12s:%(lineno)d - %(levelname)s - %(message)s',
+            'format': '%(asctime)s - %(name)s:%(lineno)d - %(levelname)s - %(message)s',
         },
         'json': {
             'format': '%(asctime)s' \
                       '%(name)s' \
-                      '%(funcName)s' \
                       '%(lineno)s' \
                       '%(levelname)s' \
                       '%(message)s',
