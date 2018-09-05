@@ -3,6 +3,12 @@
 <p>Username: {{ vcnaccount.get_username }}</p>
 <p>First name: {{ vcnaccount.first_name }}</p>
 <p>Last name: {{ vcnaccount.last_name }}</p>
-{% if vcnaccount.staff_title %}
-<p>Staff title: {{ vcnaccount.staff_title }}</p>
+{% if vcaccount.is_staff and vcnaccount.staff_title %}
+<p>Staff title: {{ vcnaccount.staff_title|default:"No title" }}</p>
 {% endif %}
+{% if not user.is_active %}
+<p>{{ vcnaccount }}'s is <strong>not active</strong></p>
+{% else %}
+<p>{{ vcnaccount }}'s is active</p>
+{% endif %}
+<p></p>

@@ -28,11 +28,26 @@
 {% endblock %}
   
 {% block page_title %}
-  {{ vcnaccount }} <small class="text-muted">{{ vcnaccount.username }}</small>
+  {{ vcnaccount }}
+  <small class="text-muted">
+    {{ vcnaccount.username }}
+  </small>
 {% endblock %}
 
 
 {% block content %}
+  {% if request.user.is_superuser %}
+    {% if not vcnaccount.is_active %}
+      <div class="alert alert-danger" role="alert">
+        Account not activated
+      </div>
+    {% else %}
+      <div class="alert alert-success" role="alert">
+        Account activated
+      </div>
+    {% endif %}
+  {% endif %}
+
   {% if vcnaccount.is_superuser %}
     <div class="alert alert-warning{% if dismissive_alert %} alert-dismissible fade show{% endif %}" role="alert">
       <h4 class="alert-heading">Webmaster</h4>
