@@ -21,15 +21,36 @@ from . import views
 
 app_name = 'dj-vcn-accounts'
 urlpatterns = [
-    path('', views.VcnAccountListView.as_view(), name='list'),
-    path('staff', views.VcnAccountListView.as_view(staff=True), name='staff'),
-    path('webmaster', views.VcnAccountListView.as_view(webmaster=True), name='webmaster'),
-    path('create', views.VcnAccountCreateView.as_view(), name='create'),
-    path('<str:slug>', views.VcnAccountDetailView.as_view(), name='detail'),
-    path('activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})',
-         views.VcnAccountActivationView.as_view(),
+    path('',
+         view=views.VcnAccountListView.as_view(),
+         name='list'
+         ),
+    path('staff',
+         view=views.VcnAccountListView.as_view(staff=True),
+         name='staff'
+         ),
+    path('webmaster',
+         view=views.VcnAccountListView.as_view(webmaster=True),
+         name='webmaster'
+         ),
+    path('create',
+         view=views.VcnAccountCreateView.as_view(),
+         name='create'
+         ),
+    path('<str:slug>',
+         view=views.VcnAccountDetailView.as_view(),
+         name='detail'
+         ),
+    path('activate/<uuid:uidb64>/<slug:token>',
+         view=views.VcnAccountActivationView.as_view(),
          name='activate'
          ),
-    path('<str:slug>/update', views.VcnAccountUpdateView.as_view(), name='update'),
-    path('<str:slug>/delete', views.VcnAccountDeleteView.as_view(), name='delete'),
+    path('<str:slug>/update',
+         view=views.VcnAccountUpdateView.as_view(),
+         name='update'
+         ),
+    path('<str:slug>/delete',
+         view=views.VcnAccountDeleteView.as_view(),
+         name='delete'
+         ),
 ]
