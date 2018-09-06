@@ -3,12 +3,22 @@
     <ul>
   {% endif %}
 
-  <li><a href="{% url 'dj-vcn-accounts:detail' v.username %}">{{ v }}</a></li>
+  <li>
+    <a href="{% url 'dj-vcn-accounts:detail' v.username %}">{{ v }}</a>
+  </li>
 
   {% if forloop.last %}
     </ul>
   {% endif %}
 {% empty %}
-  <p>No {% if 'staff' in request.path %}staff {% endif %}accounts...</p>
+  <p>
+    No
+      {% if 'staff' in request.path %}
+        staff
+      {% elif 'webmaster' in request.path %}
+        webmaster
+      {% endif %}
+    accounts...
+  </p>
   <p>You can create one <a href="{% url 'dj-vcn-accounts:create' %}">here</a></p>
 {% endfor %}

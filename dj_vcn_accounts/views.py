@@ -8,7 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
-from django.core.mail import EmailMessage
+from django.core.mail import send_mail
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
@@ -47,7 +47,6 @@ class VcnAccountListView(ListView):
 
     def get_queryset(self):
         """Get queryset."""
-
         if not self.request.user.is_superuser:
             qs = VcnAccount.objects.filter(is_active=True)
         else:
@@ -115,23 +114,28 @@ class VcnAccountCreateView(CreateView):
         data['token'] = account_activation_token.make_token(user)
         logger.info(data)
         logger.info(reverse('dj-vcn-accounts:activate', kwargs={'uidb64': data['uidb64'], 'token': data['token']}))
+
         email_msg = render_to_string('dj_vcn_accounts/vcnaccount_active_email.html', data)
-
-        logger.info(email_msg)
         to_email = form.cleaned_data.get('email')
-        email = EmailMessage('Activate your VCN account.', email_msg, to=[to_email])
-        email.send()
+        logger.info("Sending activation email to {}".format(to_email))
+        logger.info("Link: 'http://{}/{}'".format(data['domain'], reverse(
+            "dj_vcn_accounts:activate", kwargs={'uidb64': data['uidb64'], 'token': data['token']})))
+        send_mail(subject='Activate your VCN account.',
+                  message=email_msg,
+                  from_email='henri.buyse@gmail.com',
+                  recipient_list=[to_email]
+                  )
 
-        return HttpResponseRedirect(self.get_success_url())
+        return super().form_valid(form)
 
     def get_success_url(self):
         """Get the URL after the success."""
-        messages.success("Your account has successfully been created."
+        messages.success(self.request, "Your account has successfully been created."
                          "Go to your email account to finish the activation.")
         return reverse('dj-vcn-accounts:detail', kwargs={'slug': self.object.username})
 
 
-class VcnAccountUpdateView(LoginRequiredMixin, UpdateView):
+class VcnAccountUpdateView(UpdateView):
     """View that updates a VCN account."""
 
     model = VcnAccount
@@ -153,7 +157,7 @@ class VcnAccountUpdateView(LoginRequiredMixin, UpdateView):
                 request.user.username, self.object.username))
             pass
         # Anonymous user can not update account
-        elif not request.user.is_authenticated:
+        elif request.user.is_anonymous:
             logger.error("Anonymous user tried to GET the UpdateView of {}'s account.".format(self.object.username))
             raise PermissionDenied
         # Authenticated user can not update an other user account
@@ -178,7 +182,7 @@ class VcnAccountUpdateView(LoginRequiredMixin, UpdateView):
                 request.user.username, self.object.username))
             logger.info(kwargs)
             pass
-        elif not request.user.is_authenticated:
+        elif request.user.is_anonymous:
             logger.error(
                 "Anonymous user tried to POST to the DeleteView of {}'s account.".format(self.object.username)
             )
@@ -196,7 +200,7 @@ class VcnAccountUpdateView(LoginRequiredMixin, UpdateView):
         return reverse('dj-vcn-accounts:detail', kwargs={'slug': self.object.username})
 
 
-class VcnAccountDeleteView(LoginRequiredMixin, DeleteView):
+class VcnAccountDeleteView(DeleteView):
     """View that deletes a VCN account."""
 
     model = VcnAccount
@@ -217,7 +221,7 @@ class VcnAccountDeleteView(LoginRequiredMixin, DeleteView):
                 request.user.username, self.object.username))
             pass
         # Anonymous user can not update account
-        elif not request.user.is_authenticated:
+        elif request.user.is_anonymous:
             logger.error("Anonymous user tried to GET the DeleteView of {}'s account.".format(self.object.username))
             raise PermissionDenied
         # Authenticated user can not update an other user account
@@ -242,7 +246,7 @@ class VcnAccountDeleteView(LoginRequiredMixin, DeleteView):
                 request.user.username, self.object.username))
             logger.info(kwargs)
             pass
-        elif not request.user.is_authenticated:
+        elif request.user.is_anonymous:
             logger.error("Anonymous user tried to delete {}'s account.".format(self.object.username))
             raise PermissionDenied
         elif request.user.id != self.object.id:
@@ -267,8 +271,6 @@ class VcnAccountActivationView(View):
 
     See https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef for documentation
     """
-
-    template_name = 'dj_vcn_accounts/vcnaccount_activated.html'
 
     def get(self, request, *args, **kwargs):
         """..."""
