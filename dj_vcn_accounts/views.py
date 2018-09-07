@@ -5,7 +5,6 @@
 import logging
 
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
@@ -46,18 +45,19 @@ class VcnAccountListView(ListView):
     webmaster = False
 
     def get_queryset(self):
-        """Get queryset."""
-        if not self.request.user.is_superuser:
-            qs = VcnAccount.objects.filter(is_active=True)
-        else:
-            qs = VcnAccount.objects.all()
+        """Get queryset.
+
+        Staff user and superuser can see all the account (active and inactive)
+        """
+        qs = VcnAccount.objects.all()
+
+        if not self.request.user.is_staff and not self.request.user.is_superuser:
+            qs = qs.filter(is_active=True)
 
         if self.staff:
-            logger.debug("Accessing staff page")
             qs = qs.filter(is_staff=self.staff)
 
         if self.webmaster:
-            logger.debug("Accessing webmaster page")
             qs = qs.filter(is_superuser=self.webmaster)
 
         return qs
@@ -69,12 +69,6 @@ class VcnAccountDetailView(DetailView):
     model = VcnAccount
     # use username instead of pk
     slug_field = "username"
-
-    def get_context_data(self, **kwargs):
-        """."""
-        context = super().get_context_data(**kwargs)
-        context['dismissive_alert'] = False
-        return context
 
 
 class VcnAccountCreateView(CreateView):

@@ -78,7 +78,7 @@ class TestVcnAccountCreateViewAsStaff(TestCase):
             'last_name': "Buyse",
             'is_staff': True
         }
-        self.user = get_user_model().objects.create_user(**self.dict)
+        self.staff = get_user_model().objects.create_user(**self.dict)
 
     def test_get(self):
         """Tests."""
@@ -86,7 +86,7 @@ class TestVcnAccountCreateViewAsStaff(TestCase):
         r = self.client.get(reverse('dj-vcn-accounts:create'))
 
         self.assertEqual(r.status_code, 302)
-        self.assertIn('/{}/update'.format(self.user.get_username()), r.url)
+        self.assertIn('/{}/update'.format(self.staff.get_username()), r.url)
 
     def test_post(self):
         """Tests."""
