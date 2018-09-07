@@ -151,8 +151,13 @@ class VcnAccountUpdateView(UpdateView):
         """
         self.object = self.get_object()
 
-        # If user is part of staff or superuser
-        if request.user.is_staff or request.user.is_superuser:
+        # If user is superuser
+        if request.user.is_superuser:
+            logger.info("Superuser {} accessed (GET) the UpdateView of {}'s account.".format(
+                request.user.username, self.object.username))
+            pass
+        # If user is part of staff
+        elif request.user.is_staff:
             logger.info("Staff user {} accessed (GET) the UpdateView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
@@ -176,11 +181,15 @@ class VcnAccountUpdateView(UpdateView):
         """
         self.object = self.get_object()
 
-        # If user is part of staff or superuser
-        if request.user.is_staff or request.user.is_superuser:
-            logger.info("Staff user {} accessed (POST) to the DeleteView of {}'s account.".format(
+        # If user is superuser
+        if request.user.is_superuser:
+            logger.info("Superuser {} accessed (GET) the UpdateView of {}'s account.".format(
                 request.user.username, self.object.username))
-            logger.info(kwargs)
+            pass
+        # If user is part of staff
+        elif request.user.is_staff:
+            logger.info("Staff user {} accessed (GET) the UpdateView of {}'s account.".format(
+                request.user.username, self.object.username))
             pass
         elif request.user.is_anonymous:
             logger.error(
@@ -215,9 +224,14 @@ class VcnAccountDeleteView(DeleteView):
         """
         self.object = self.get_object()
 
-        # If user is part of staff or superuser
-        if request.user.is_staff or request.user.is_superuser:
-            logger.info("Staff user {} accessed (GET) the DeleteView of {}'s account.".format(
+        # If user is superuser
+        if request.user.is_superuser:
+            logger.info("Superuser {} accessed (GET) the UpdateView of {}'s account.".format(
+                request.user.username, self.object.username))
+            pass
+        # If user is part of staff
+        elif request.user.is_staff:
+            logger.info("Staff user {} accessed (GET) the UpdateView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         # Anonymous user can not update account
@@ -240,11 +254,15 @@ class VcnAccountDeleteView(DeleteView):
         """
         self.object = self.get_object()
 
-        # If user is part of staff or superuser
-        if request.user.is_staff or request.user.is_superuser:
-            logger.info("Staff user {} accessed (DELETE) to the DeleteView of {}'s account.".format(
+        # If user is superuser
+        if request.user.is_superuser:
+            logger.info("Superuser {} accessed (GET) the UpdateView of {}'s account.".format(
                 request.user.username, self.object.username))
-            logger.info(kwargs)
+            pass
+        # If user is part of staff
+        elif request.user.is_staff:
+            logger.info("Staff user {} accessed (GET) the UpdateView of {}'s account.".format(
+                request.user.username, self.object.username))
             pass
         elif request.user.is_anonymous:
             logger.error("Anonymous user tried to delete {}'s account.".format(self.object.username))
