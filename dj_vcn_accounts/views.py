@@ -33,7 +33,6 @@ from .tokens import (
     account_activation_token
 )
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -220,12 +219,12 @@ class VcnAccountDeleteView(DeleteView):
 
         # If user is superuser
         if request.user.is_superuser:
-            logger.info("Superuser {} accessed (GET) the UpdateView of {}'s account.".format(
+            logger.info("Superuser {} accessed (GET) the DeleteView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         # If user is part of staff
         elif request.user.is_staff:
-            logger.info("Staff user {} accessed (GET) the UpdateView of {}'s account.".format(
+            logger.info("Staff user {} accessed (GET) the DeleteView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         # Anonymous user can not update account
@@ -250,12 +249,12 @@ class VcnAccountDeleteView(DeleteView):
 
         # If user is superuser
         if request.user.is_superuser:
-            logger.info("Superuser {} accessed (GET) the UpdateView of {}'s account.".format(
+            logger.info("Superuser {} accessed (GET) the DeleteView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         # If user is part of staff
         elif request.user.is_staff:
-            logger.info("Staff user {} accessed (GET) the UpdateView of {}'s account.".format(
+            logger.info("Staff user {} accessed (GET) the DeleteView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         elif request.user.is_anonymous:
