@@ -1,6 +1,9 @@
 {% autoescape off %}
 Hi {{ user.username }},
-Please click on the link to confirm your registration,
+Please click on the link to confirm your registration.
 
 http://{{ domain }}{% url 'dj_vcn_accounts:activate' uidb64 token %}
+
+--
+VCN
 {% endautoescape %}

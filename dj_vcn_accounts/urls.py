@@ -25,31 +25,31 @@ urlpatterns = [
          view=views.VcnAccountListView.as_view(),
          name='list'
          ),
-    path('staff',
+    path('staff/',
          view=views.VcnAccountListView.as_view(staff=True),
          name='staff'
          ),
-    path('webmaster',
+    path('webmaster/',
          view=views.VcnAccountListView.as_view(webmaster=True),
          name='webmaster'
          ),
-    path('create',
+    path('create/',
          view=views.VcnAccountCreateView.as_view(),
          name='create'
          ),
-    path('activate/<slug:uidb64>/<slug:token>',
+    path('activate/<slug:uidb64>/<slug:token>/',
          view=views.VcnAccountActivationView.as_view(),
          name='activate'
          ),
-    path('<str:slug>',
+    path('<str:slug>/',
          view=views.VcnAccountDetailView.as_view(),
          name='detail'
          ),
-    path('<str:slug>/update',
+    path('<str:slug>/update/',
          view=views.VcnAccountUpdateView.as_view(),
          name='update'
          ),
-    path('<str:slug>/delete',
+    path('<str:slug>/delete/',
          view=views.VcnAccountDeleteView.as_view(),
          name='delete'
          ),

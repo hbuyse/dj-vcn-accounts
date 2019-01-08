@@ -5,15 +5,12 @@
 import logging
 
 from django.contrib import messages
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied
 from django.core.mail import send_mail
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import redirect
-from django.template.loader import render_to_string
 from django.urls import reverse
-from django.utils.encoding import force_bytes, force_text
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_text
 from django.views.generic import (
     View,
     CreateView,
@@ -22,15 +19,13 @@ from django.views.generic import (
     ListView,
     DetailView
 )
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 from .forms import (
     VcnAccountCreationForm
 )
 from .models import (
     VcnAccount,
-)
-from .tokens import (
-    account_activation_token
 )
 
 logger = logging.getLogger(__name__)
@@ -96,29 +91,9 @@ class VcnAccountCreateView(CreateView):
 
     def form_valid(self, form):
         """..."""
-        data = {}
-        user = form.save(commit=False)
-        user.is_active = False
-        user.save()
-
-        data['user'] = user
-        data['domain'] = get_current_site(self.request).domain
-        data['uidb64'] = urlsafe_base64_encode(force_bytes(user.pk)).decode("utf-8")
-        data['token'] = account_activation_token.make_token(user)
-        logger.info(data)
-        logger.info(reverse('dj-vcn-accounts:activate', kwargs={'uidb64': data['uidb64'], 'token': data['token']}))
-
-        email_msg = render_to_string('dj_vcn_accounts/vcnaccount_active_email.html', data)
-        to_email = form.cleaned_data.get('email')
-        logger.info("Sending activation email to {}".format(to_email))
-        logger.info("Link: 'http://{}/{}'".format(data['domain'], reverse(
-            "dj_vcn_accounts:activate", kwargs={'uidb64': data['uidb64'], 'token': data['token']})))
-        send_mail(subject='Activate your VCN account.',
-                  message=email_msg,
-                  from_email='henri.buyse@gmail.com',
-                  recipient_list=[to_email]
-                  )
-
+        self.user = form.save(commit=False)
+        self.user.is_active = False
+        self.user.save()
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -176,12 +151,12 @@ class VcnAccountUpdateView(UpdateView):
 
         # If user is superuser
         if request.user.is_superuser:
-            logger.info("Superuser {} accessed (GET) the UpdateView of {}'s account.".format(
+            logger.info("Superuser {} accessed (POST) the UpdateView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         # If user is part of staff
         elif request.user.is_staff:
-            logger.info("Staff user {} accessed (GET) the UpdateView of {}'s account.".format(
+            logger.info("Staff user {} accessed (POST) the UpdateView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         elif request.user.is_anonymous:
@@ -249,12 +224,12 @@ class VcnAccountDeleteView(DeleteView):
 
         # If user is superuser
         if request.user.is_superuser:
-            logger.info("Superuser {} accessed (GET) the DeleteView of {}'s account.".format(
+            logger.info("Superuser {} accessed (DELETE) the DeleteView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         # If user is part of staff
         elif request.user.is_staff:
-            logger.info("Staff user {} accessed (GET) the DeleteView of {}'s account.".format(
+            logger.info("Staff user {} accessed (DELETE) the DeleteView of {}'s account.".format(
                 request.user.username, self.object.username))
             pass
         elif request.user.is_anonymous:

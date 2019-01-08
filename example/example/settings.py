@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     'dj_vcn_accounts',
 
@@ -82,6 +83,10 @@ INSTALLED_APPS = [
     'bootstrap4',
     'django_icons',
 ]
+
+# Enabling the sites framework
+# https://docs.djangoproject.com/en/2.1/ref/contrib/sites/#enabling-the-sites-framework
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
