@@ -27,6 +27,9 @@ from .forms import (
 from .models import (
     VcnAccount,
 )
+from .tokens import (
+    account_activation_token
+)
 
 logger = logging.getLogger(__name__)
 
