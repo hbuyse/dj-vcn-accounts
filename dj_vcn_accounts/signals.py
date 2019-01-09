@@ -1,30 +1,20 @@
-#! /usr/bin/env python
-
-from django.conf import settings
-from django.db.models.signals import pre_save, post_save, post_delete
-from django.dispatch import receiver
-from django.template.loader import render_to_string
-from django.urls import reverse
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes
-
-from .models import VcnAccount
-from .tokens import (
-    account_activation_token
-)
+# -*- coding: utf-8 -*-
+"""Signals handlers for the dj-vcn-accounts."""
 
 import logging
-from datetime import datetime, date, timedelta
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from .emails import send_activation_email
+from .models import VcnAccount
 
 logger = logging.getLogger(__name__)
 
 
 @receiver(post_save, sender=VcnAccount)
 def post_save_vcnaccount(sender, instance, **kwargs):
-    """Post saving function used when saving a VcnAccount
+    """Post saving function used when saving a VcnAccount.
 
     If the user has just been created, then we send an activation email to be sure that the email works.
     """

@@ -1,21 +1,24 @@
+# -*- coding: utf-8 -*-
+"""Signals handlers for the dj-vcn-accounts."""
+
+import logging
+
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.sites.models import Site
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
-from django.db.models.signals import pre_save, post_save, post_delete
-from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-
-import logging
+from django.utils.http import urlsafe_base64_encode
 
 from .tokens import account_activation_token
 
 logger = logging.getLogger(__name__)
 
+
 def send_activation_email(vcnaccount):
+    """Send an account activation email."""
     from_email = "henri.buyse@gmail.com"
     ctx = {
         'user': vcnaccount,
@@ -35,7 +38,9 @@ def send_activation_email(vcnaccount):
         "dj_vcn_accounts:activate", kwargs={'uidb64': ctx['uidb64'], 'token': ctx['token']})))
 
     if settings.DEBUG:
-        logger.info("Mock: send activation email to {} (to send real email: put settings.DEBUG to True)".format(vcnaccount.email))
+        logger.info("Mock: send activation email to {} (to send real email:"
+                    "put settings.DEBUG to True)".format(vcnaccount.email)
+                    )
     else:
         EmailMessage(subject, message, to=[vcnaccount.email], from_email=from_email).send()
         logger.info("Email sent to {}".format(vcnaccount.email))
