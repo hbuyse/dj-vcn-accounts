@@ -18,6 +18,8 @@ matrix:
       env: TOXENV=py36-django-20
     - python: 3.6
       env: TOXENV=py36-django-21
+    - python: 3.6
+      env: TOXENV=flake8
 
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -r requirements/test.txt
